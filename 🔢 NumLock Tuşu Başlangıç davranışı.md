@@ -18,7 +18,12 @@ sudo mkdir -p /root/.config sudo kwriteconfig6 --file /root/.config/kcminputrc -
 Scripti oluştur:
 
 ```bash
-sudo bash -c 'cat > /usr/local/bin/numlock-vt << "EOF" #!/bin/bash for tty in /dev/tty{1..6}; do /usr/bin/setleds -D +num < "$tty" 2>/dev/null done EOF'
+sudo bash -c 'cat > /usr/local/bin/numlock-vt << "EOF"
+#!/bin/bash
+for tty in /dev/tty{1..6}; do
+    /usr/bin/setleds -D +num < "$tty" 2>/dev/null
+done
+EOF'
 ```
 
 Scripti çalıştırılabilir yap:
@@ -30,7 +35,21 @@ sudo chmod +x /usr/local/bin/numlock-vt
 Bu emri çekirdeğe işleyecek systemd servisini yaz:
 
 ```bash
-sudo bash -c 'cat > /etc/systemd/system/numlock-tty.service << "EOF" [Unit] Description=Set NumLock Default on Kernel VTs DefaultDependencies=no After=local-fs.target Before=sysinit.target display-manager.service [Service] Type=oneshot ExecStart=/usr/local/bin/numlock-vt RemainAfterExit=yes [Install] WantedBy=sysinit.target EOF'
+sudo bash -c 'cat > /etc/systemd/system/numlock-tty.service << "EOF"
+[Unit]
+Description=Set NumLock Default on Kernel VTs
+DefaultDependencies=no
+After=local-fs.target
+Before=sysinit.target display-manager.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/numlock-vt
+RemainAfterExit=yes
+
+[Install]
+WantedBy=sysinit.target
+EOF'
 ```
 
 Servisi aktifleştir:
@@ -41,5 +60,6 @@ sudo systemctl enable numlock-tty.service
 
 > [!TIP]
 > Artık emirlerine itaat edip NumLock tuşunu otomatik açan bir sistem var
+
 
 
